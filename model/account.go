@@ -54,7 +54,6 @@ func (a *Account) FindByName(rep repository.Repository, name string) (*Account, 
 
 	return account, nil
 }
-
 // Create persists this account data.
 func (a *Account) Create(rep repository.Repository) (*Account, error) {
 	result := rep.Exec(`SELECT name, password, authority_id FROM account_master WHERE name = ?`, a.Name)
