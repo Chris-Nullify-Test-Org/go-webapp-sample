@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/moznion/go-optional"
