@@ -59,13 +59,16 @@ func (a *Account) FindByName(rep repository.Repository, name string) (*Account, 
 
 // Create persists this account data.
 func (a *Account) Create(rep repository.Repository) (*Account, error) {
-	query := fmt.Sprintf(`SELECT name, password, authority_id FROM account_master WHERE name = %s`, a.Name)
-
-	result := rep.Exec(query)
-	if result.Error != nil {
-		return nil, result.Error
+	// Check if account with same name already exists
+	var existingAccount RecordAccount
+	result := rep.Raw(`SELECT name, password, authority_id FROM account_master WHERE name = ?`, a.Name).Scan(&existingAccount)
+	
+	// If we found a record, return an error
+	if result.RowsAffected > 0 {
+		return nil, fmt.Errorf("account with name '%s' already exists", a.Name)
 	}
-
+	
+	// Otherwise create the new account
 	if err := rep.Select("name", "password", "authority_id").Create(a).Error; err != nil {
 		return nil, err
 	}
