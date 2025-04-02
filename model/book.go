@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/moznion/go-optional"
@@ -170,10 +169,10 @@ func (b *Book) Update(rep repository.Repository) (*Book, error) {
 
 // Create persists this book data.
 func (b *Book) Create(rep repository.Repository) (*Book, error) {
-	query := fmt.Sprintf(`SELECT title, isbn, category_id, format_id FROM book WHERE title = %s`, b.Title)
-
-	result := rep.Exec(query)
-	if result.Error != nil {
+	// Check if a book with the same title already exists using parameterized query
+	var existingBook Book
+	result := rep.Where("title = ?", b.Title).First(&existingBook)
+	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, result.Error
 	}
 
