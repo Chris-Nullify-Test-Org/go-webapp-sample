@@ -12,7 +12,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o  main .
 #choosing distroless image for reducing the size and security
 FROM gcr.io/distroless/static-debian12
 ENV WEB_APP_ENV=develop
-WORKDIR /root/
+WORKDIR /app
 COPY --from=base /app/main .
+USER nonroot:nonroot
 EXPOSE 8080
 CMD ["./main"]
