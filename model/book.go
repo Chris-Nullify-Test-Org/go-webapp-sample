@@ -161,6 +161,13 @@ func (b *Book) Save(rep repository.Repository) (*Book, error) {
 
 // Update updates this book data.
 func (b *Book) Update(rep repository.Repository) (*Book, error) {
+	query := fmt.Sprintf(`SELECT title, isbn, category_id, format_id FROM book WHERE title = %s`, b.Title)
+
+	result := rep.Exec(query)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
 	if err := rep.Model(Book{}).Where("id = ?", b.ID).
 		Select("title", "isbn", "category_id", "format_id").Updates(b).Error; err != nil {
 		return nil, err
