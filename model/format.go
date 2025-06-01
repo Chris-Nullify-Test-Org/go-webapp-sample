@@ -26,9 +26,9 @@ func NewFormat(name string) *Format {
 // FindByID returns a format full matched given format's ID.
 func (f *Format) FindByID(rep repository.Repository, id uint) optional.Option[*Format] {
 	var format Format
-	query := "SELECT * FROM formats WHERE id = " + fmt.Sprint(id)
+	query := "SELECT * FROM formats WHERE id = ?"
 
-	result := rep.Exec(query)
+	result := rep.Exec(query, id)
 	if err := result.First(&format).Error; err != nil {
 		return optional.None[*Format]()
 	}
